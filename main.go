@@ -96,15 +96,14 @@ func walker(state []int, results chan<- []int, wg *sync.WaitGroup) {
 	case CORNER:
 		for i := 0; i < 9; i++ {
 			if !contains(state, i) {
+				ns := append(append(make([]int, 0), state...), i)
 				if getDotType(i) != CORNER {
 					wg.Add(1)
-					ns := append(state, i)
 					go walker(ns, results, wg)
 				} else {
 					middleDot := getMiddle(lastDot, i)
 					if contains(state, middleDot) {
 						wg.Add(1)
-						ns := append(state, i)
 						go walker(ns, results, wg)
 					}
 				}
@@ -113,19 +112,17 @@ func walker(state []int, results chan<- []int, wg *sync.WaitGroup) {
 	case SIDE:
 		for i := 0; i < 9; i++ {
 			if !contains(state, i) {
+				ns := append(append(make([]int, 0), state...), i)
 				if getDotType(i) != SIDE {
 					wg.Add(1)
-					ns := append(state, i)
 					go walker(ns, results, wg)
 				} else if lastDot+i == 8 {
 					if contains(state, 4) {
 						wg.Add(1)
-						ns := append(state, i)
 						go walker(ns, results, wg)
 					}
 				} else {
 					wg.Add(1)
-					ns := append(state, i)
 					go walker(ns, results, wg)
 				}
 			}
@@ -133,8 +130,8 @@ func walker(state []int, results chan<- []int, wg *sync.WaitGroup) {
 	case CENTER:
 		for i := 0; i < 9; i++ {
 			if !contains(state, i) {
+				ns := append(append(make([]int, 0), state...), i)
 				wg.Add(1)
-				ns := append(state, i)
 				go walker(ns, results, wg)
 			}
 		}
