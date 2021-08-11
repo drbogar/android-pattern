@@ -72,18 +72,11 @@ func getMiddle(x int, y int) int {
 	}
 }
 
-/*
-The resultCount keeps count of how many states have been added to
-the results channel so far.
-*/
-var resultCount int = 0
-
 // The walker function walks the possible routes in a concurrent manner.
 func walker(state []int, results chan<- []int, wg *sync.WaitGroup) {
 	defer wg.Done()
 	if len(state) > 3 {
 		results <- state
-		resultCount++
 	}
 
 	/*
@@ -167,7 +160,6 @@ func main() {
 		fileStr += dataStr + "\n"
 		fmt.Println(dataStr)
 	}
-	fmt.Println("resultCount", resultCount)
 	d1 := []byte(fileStr)
 	_ = ioutil.WriteFile("dat1.csv", d1, 0644)
 }
