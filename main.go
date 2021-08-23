@@ -7,8 +7,10 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
+	"log"
+	"os"
 	"sync"
+	"time"
 )
 
 /*
@@ -131,7 +133,13 @@ func walker(state []int, results chan<- []int, wg *sync.WaitGroup) {
 	}
 }
 
+func timeTrack(start time.Time, name string) {
+	elapsed := time.Since(start)
+	log.Printf("%s took %s", name, elapsed)
+}
+
 func main() {
+	defer timeTrack(time.Now(), "main")
 	// The wg is a WaitGroup, which indicates when the routes are finished.
 	wg := &sync.WaitGroup{}
 	nineFact := 9 * 8 * 7 * 6 * 5 * 4 * 3 * 2 * 1
@@ -152,14 +160,12 @@ func main() {
 		wg.Wait()
 		close(results)
 	}()
-	fileStr := ""
 	i := 0
+	f, _ := os.Create("dat1.csv")
+	defer f.Close()
 	for v := range results {
 		i++
-		dataStr := fmt.Sprint(i, ";", v)
-		fileStr += dataStr + "\n"
-		fmt.Println(dataStr)
+		f.WriteString(fmt.Sprint(i, ";", v, "\n"))
 	}
-	d1 := []byte(fileStr)
-	_ = ioutil.WriteFile("dat1.csv", d1, 0644)
+	fmt.Println("resultCount", i)
 }
